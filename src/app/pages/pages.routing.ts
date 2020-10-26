@@ -13,8 +13,6 @@ const routes: Routes = [
       { path: '', component: DashboardComponent },
       { path: 'progress', component: ProgressComponent },
       { path: 'grafica1', component: Grafica1Component },
-      // Redireccion con slash vacío
-      /* { path: '', redirectTo: '/dashboard', pathMatch: 'full' }, */
     ],
   },
   //{ path: 'path/:routeParam', component: MyComponent },
