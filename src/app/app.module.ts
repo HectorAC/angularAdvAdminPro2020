@@ -19,4 +19,4 @@ import { NopagefoundComponent } from './nopagefound/nopagefound.component';
   providers: [],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }
