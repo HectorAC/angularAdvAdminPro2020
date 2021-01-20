@@ -3,10 +3,11 @@ import { Injectable, NgZone } from '@angular/core';
 import { RegisterForm } from '../interfaces/register-form.interface';
 import { environment } from '../../environments/environment.prod';
 import { LoginForm } from '../interfaces/login-form.interface';
-import { tap, map, catchError } from 'rxjs/operators';
+import { tap, map, catchError, delay } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { Usuario } from '../models/usuario.model';
+import { CargarUsuario } from '../interfaces/cargar-usuarios.interface';
 const base_url = environment.base_url;
 declare const gapi: any;
 
@@ -32,6 +33,14 @@ export class UsuarioService {
     return this.usuario.uid || '';
   }
 
+  get headers() {
+    return {
+      headers: {
+        'x-token': this.token
+      }
+    };
+  }
+
   logout() {
     localStorage.removeItem('token');
     this.auth2.signOut().then(() => {
@@ -51,18 +60,14 @@ export class UsuarioService {
         });
         resolve(this.auth2);
       });
-    })
+    });
   }
 
   verificaToken(): Observable<boolean> {
-    return this.http.get(`${base_url}/login/renew`, {
-      headers: {
-        'x-token': this.token
-      }
-    }).pipe(
+    return this.http.get(`${base_url}/login/renew`, this.headers).pipe(
       map((res: any) => {
         const { nombre, email, password, img = '', google, role, uid } = res.usuario;
-        this.usuario = new Usuario(nombre, email, '', img, google, role, uid)
+        this.usuario = new Usuario(nombre, email, '', img, google, role, uid);
         this.usuario.imprimirUsuario();
         localStorage.setItem('token', res.token);
         return true;
@@ -80,17 +85,14 @@ export class UsuarioService {
       );
   }
 
-  //mejor crear una interfaz
-  actualizarPerfil(data: { email: string, nombre: string, role: string }) {    
+  // mejor crear una interfaz
+  actualizarPerfil(data: { email: string, nombre: string, role: string }) {
     data = {
       ...data,
       role: this.usuario.role
-    }
-    return this.http.put(`${base_url}/usuarios/${this.uid}`, data, {
-      headers: {
-        'x-token': this.token
-      }
-    });
+    };
+
+    return this.http.put(`${base_url}/usuarios/${this.uid}`, data, this.headers);
   }
 
   login(formData: LoginForm) {
@@ -102,8 +104,6 @@ export class UsuarioService {
       );
   }
 
-
-
   loginGoogle(token: any) {
     return this.http.post(`${base_url}/login/google`, { token })
       .pipe(
@@ -112,6 +112,36 @@ export class UsuarioService {
         })
       );
   }
+
+  cargarUsuarios(desde: number = 0) {
+    const url = `${base_url}/usuarios/?desde=${desde}`;
+    /* return this.http.get<{ total: number, usuarios: Usuario[] }>(url, this.headers); */
+    return this.http.get<CargarUsuario>(url, this.headers)
+      .pipe(
+        //delay(5000),
+        map(res => {
+          const usuarios = res.usuarios.map(
+            user => new Usuario(user.nombre, user.email, '', user.img, user.google, user.role, user.uid)
+          );
+
+          return {
+            total: res.total,
+            usuarios
+          };
+        })
+      );
+  }
+
+  eliminarUsuario(us: Usuario) {
+    const url = `${base_url}/usuarios/${us.uid}`;
+    return this.http.delete(url, this.headers);
+  }
+
+  guardarUsuario(data: Usuario) {
+    return this.http.put(`${base_url}/usuarios/${data.uid}`, data, this.headers);
+  }
+
+
 
 
 }
