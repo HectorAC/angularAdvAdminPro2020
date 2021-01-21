@@ -2,13 +2,15 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <input type="text" class="form-control" placeholder="Buscar usuario">
+                <input type="text" class="form-control" placeholder="Buscar usuario"
+                    (keyup)="buscar(txtTermino.value)"
+                       #txtTermino>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row animated fadeIn fast">
+<div class="row animated fadeIn fast" *ngIf="cargando">
     <div class="col-12">
         <div class="alert alert-info text-center">
             <h4 class="alert-heading">Cargando</h4>
@@ -18,46 +20,45 @@
     </div>
 </div>
 
-<div class="row">
+<div class="row" *ngIf="!cargando">
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title">Usuarios</h4>
-                <h6 class="card-subtitle">Usuarios registrados
+                <div class="text-right">
+                    <button class="btn btn-primary" (click)="abrirSwal()">
+                        <i class="fa fa-hospital-o"></i>
+                        Crear hospital
+                    </button>
+                </div>
+
+                <h4 class="card-title">Hospitales ({{hospitales.length}})</h4>
+                <h6 class="card-subtitle">Hospitales registrados
                 </h6>
                 <div class="table-responsive">
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>Avatar</th>
-                                <th>Correo</th>
+                                <th class="w100">Foto</th>
                                 <th>Nombre</th>
-                                <th>Rol</th>
-                                <th>Auth</th>
-                                <th class="text-nowrap">Acciones</th>
+                                <th class="text-nowrap w100">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Lunar probe project</td>
-                                <td>Lunar probe project</td>
-                                <td>Lunar probe project</td>
-                                <td>Lunar probe project</td>
-                                <td>Lunar probe project</td>
-                                <td class="text-nowrap">
-                                    <a href="#" data-toggle="tooltip" data-original-title="Editar"> <i
-                                           class="fa fa-pencil text-inverse m-r-10"></i> </a>
-                                    <a href="#" data-toggle="tooltip" data-original-title="Borrar"> <i
+                            <tr *ngFor="let hos of hospitales">
+                                <td class="text-center">
+                                    <img (click)="abrirModal(hos)" [src]="hos.img | imagen:'hospitales'" [alt]="hos.nombre" class="w100 pointer">
+                                </td>
+                                <td>{{hos.nombre}}</td>
+                                <td class="text-nowrap text-center">
+                                    <a data-toggle="tooltip" data-original-title="Guardar" (click)="putHospital(hos)"> <i
+                                           class="fa fa-save text-inverse m-r-10"></i> </a>
+                                    <a data-toggle="tooltip" data-original-title="Borrar" (click)="deleteHospital(hos)" class="cursor"> <i
                                            class="fa fa-close text-danger"></i> </a>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-
-                <button class="btn btn-secondary">Siguiente</button>
-                &nbsp;
-                <button class="btn btn-secondary">Anteriores</button>
             </div>
         </div>
     </div>

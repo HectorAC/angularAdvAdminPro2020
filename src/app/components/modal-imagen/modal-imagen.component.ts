@@ -32,8 +32,6 @@ export class ModalImagenComponent {
     reader.onloadend = () => {
       this.imgTemp = reader.result;
     };
-
-    this.imagenSubir = null;
   }
 
   subirImagen() {
