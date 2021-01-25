@@ -29,6 +29,10 @@ export class UsuarioService {
     return localStorage.getItem('token') || '';
   }
 
+  get role(): 'ADMIN_ROLE' | 'USER_ROLE' {
+    return this.usuario.role;
+  }
+
   get uid(): string {
     return this.usuario.uid || '';
   }
@@ -41,8 +45,17 @@ export class UsuarioService {
     };
   }
 
+
+  guardarLocalStorage(token: string, menu: any) {
+    localStorage.setItem('token', token);
+    localStorage.setItem('menu', JSON.stringify(menu));
+  }
+
   logout() {
     localStorage.removeItem('token');
+    localStorage.removeItem('menu');
+
+    //TODO BORRAR MENU
     this.auth2.signOut().then(() => {
       this.ngZone.run(() => {
         this.router.navigateByUrl('/login');
@@ -69,7 +82,9 @@ export class UsuarioService {
         const { nombre, email, password, img = '', google, role, uid } = res.usuario;
         this.usuario = new Usuario(nombre, email, '', img, google, role, uid);
         this.usuario.imprimirUsuario();
-        localStorage.setItem('token', res.token);
+
+        this.guardarLocalStorage(res.token, res.menu);
+
         return true;
       }),
       catchError(error => of(false))
@@ -80,7 +95,7 @@ export class UsuarioService {
     return this.http.post(`${base_url}/usuarios`, formData)
       .pipe(
         tap((res: any) => {
-          localStorage.setItem('token', res.token);
+          this.guardarLocalStorage(res.token, res.menu);
         })
       );
   }
@@ -99,16 +114,18 @@ export class UsuarioService {
     return this.http.post(`${base_url}/login`, formData)
       .pipe(
         tap((res: any) => {
-          localStorage.setItem('token', res.token);
+          this.guardarLocalStorage(res.token, res.menu);
         })
       );
   }
 
   loginGoogle(token: any) {
+
     return this.http.post(`${base_url}/login/google`, { token })
       .pipe(
         tap((res: any) => {
-          localStorage.setItem('token', res.token);
+
+          this.guardarLocalStorage(res.token, res.menu);
         })
       );
   }
@@ -140,8 +157,4 @@ export class UsuarioService {
   guardarUsuario(data: Usuario) {
     return this.http.put(`${base_url}/usuarios/${data.uid}`, data, this.headers);
   }
-
-
-
-
 }

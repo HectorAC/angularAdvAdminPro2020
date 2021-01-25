@@ -5,27 +5,37 @@ import { Injectable } from '@angular/core';
 })
 export class SidebarService {
 
-  menu: any[] = [
+  public menu = [];
+
+  menuMock: any[] = [
     {
-      title: 'Dashboard!!',
-      icon: 'mdi mdi-gauge',
+      titulo: 'Dashboard!!',
+      icono: 'mdi mdi-gauge',
       submenu: [
-        { title: 'Dashboard', url: '/' },
-        { title: 'ProgressBar', url: 'progress' },
-        { title: 'Chart', url: 'chart' },
-        { title: 'Promesas', url: 'promesas' },
-        { title: 'Rxjs', url: 'rxjs' },
+        { titulo: 'Dashboard', url: '/' },
+        { titulo: 'ProgressBar', url: 'progress' },
+        { titulo: 'Chart', url: 'chart' },
+        { titulo: 'Promesas', url: 'promesas' },
+        { titulo: 'Rxjs', url: 'rxjs' },
       ]
     },
     {
-      title: 'Mantenimientos',
-      icon: 'mdi mdi-folder-lock-open',
+      titulo: 'Mantenimientos',
+      icono: 'mdi mdi-folder-lock-open',
       submenu: [
-        { title: 'Usuarios', url: 'usuarios' },
-        { title: 'Hospitales', url: 'hospitales' },
-        { title: 'Medicos', url: 'medicos' }
+        { titulo: 'Usuarios', url: 'usuarios' },
+        { titulo: 'Hospitales', url: 'hospitales' },
+        { titulo: 'Medicos', url: 'medicos' }
       ]
     }
-  ]
+  ];
   constructor() { }
+
+  loadMenu() {
+    this.menu = JSON.parse(localStorage.getItem('menu')) || [];
+
+    if (this.menu.length === 0) {
+      this.menu = this.menuMock;
+    }
+  }
 }

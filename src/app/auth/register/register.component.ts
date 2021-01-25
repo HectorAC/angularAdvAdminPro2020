@@ -18,7 +18,7 @@ export class RegisterComponent {
     email: ['aasdf@gmail.com', [Validators.required, Validators.email]],
     password: ['123', Validators.required],
     password2: ['123', Validators.required],
-    terminos: [false, Validators.required],
+    terminos: [false, Validators.requiredTrue],
   }, {
     validators: this.passwordsIguales('password', 'password2')
   });
@@ -31,22 +31,23 @@ export class RegisterComponent {
     this.formSubmitted = true;
     console.log(this.registerForm.value);
     console.log(this.registerForm);
-
+    
     if (this.registerForm.valid) {
       console.log('enviado');
+      //realizar post
+      this.usuarioService.crearUsuario(this.registerForm.value)
+        .subscribe(res => {
+          console.log('usuario creado');
+          console.log(res);
+          this.router.navigateByUrl('/');
+        }, (err) => {
+          swal.fire('Error', err.error.msg, 'error');
+        });
     } else {
       console.log('form no correcto...');
     }
 
-    //realizar post
-    this.usuarioService.crearUsuario(this.registerForm.value)
-      .subscribe(res => {
-        console.log('usuario creado');
-        console.log(res);
-        this.router.navigateByUrl('/');
-      }, (err) => {
-        swal.fire('Error', err.error.msg, 'error');
-      });
+
   }
 
   campoNoValido(campo: string): boolean {

@@ -13,7 +13,7 @@ export class AuthGuard implements CanActivate {
               private router: Router) { }
 
   canActivate(
-    route: ActivatedRouteSnapshot,
+    next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot) {
 
     return this.usuarioService.verificaToken()

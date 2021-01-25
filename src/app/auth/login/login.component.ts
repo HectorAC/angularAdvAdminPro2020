@@ -35,7 +35,7 @@ export class LoginComponent implements OnInit {
     this.usuarioService.login(this.loginForm.value)
       .subscribe(res => {
 
-        if (this.loginForm.get('remember').value == true) {
+        if (this.loginForm.get('remember').value === true) {
           localStorage.setItem('email', this.loginForm.get('email').value);
         } else {
           localStorage.removeItem('email');
@@ -43,8 +43,9 @@ export class LoginComponent implements OnInit {
         this.router.navigateByUrl('/');
         console.log(res);
       }, (err) => {
-        swal.fire('Error', err.error.mensaje, 'error')
-      })
+
+        swal.fire('Error', err.error.msg, 'error');
+      });
     console.log(this.loginForm.value);
   }
 
@@ -78,6 +79,7 @@ export class LoginComponent implements OnInit {
     console.log(element.id);
     this.auth2.attachClickHandler(element, {},
       (googleUser) => {
+
         const id_token = googleUser.getAuthResponse().id_token;
 
         this.usuarioService.loginGoogle(id_token)
@@ -87,6 +89,7 @@ export class LoginComponent implements OnInit {
             });
           })
       }, (error) => {
+
         alert(JSON.stringify(error, undefined, 2));
       });
   }
